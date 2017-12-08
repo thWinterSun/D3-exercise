@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+	#container{
+		background-color: #ddd;
+		width:500px;
+		height:300px;
+	}
+	path{
+		fill:none;
+		stroke:#4682B4;
+		stroke-width:2;
+
+	}
+	</style>
+	<script type="text/javascript" src="case_1/d3.min.js"></script>
+</head>
+<body>
+	<div id="container"></div>
+
+	<script type="text/javascript">
+	var width = 500,
+		height = 300,
+		margin = {left:50,top:30,right:20,bottom:20},
+		g_width = width -margin.left-margin.right,
+		g_height = height-margin.top-margin.bottom
+
+		var svg = d3.select("#container")
+		.append("svg")
+		.attr("width",width)
+		.attr("height",height)
+
+
+		d3.select("svg")
+		.append("g")
+		.attr("transform","translate("+margin.left+","+margin.top+")")
+		//图形缩放
+		var data = [1,3,4,7,8,9,5,3,8,2]
+		var scale_x = d3.scale.linear()
+		.domain([0,data.length-1])
+		.range([0,g_width])
+
+		var scale_y = d3.scale.linear()
+		.domain([0,d3.max(data)])
+		.range([0,g_height])
+		//生成数据
+		var line_generator = d3.svg.line()
+		.x(function(d,i){return scale_x(i)})
+		.y(function(d){return scale_y(d);})
+		.interpolate("cardinal") //曲线圆滑
+
+		d3.select("g")
+		.append("path")
+		.attr("d",line_generator(data))
+	</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+	#container{
+		background-color: #ddd;
+		width:500px;
+		height:300px;
+	}
+	path{
+		fill:none;
+		stroke:#4682B4;
+		stroke-width:2;
+
+	}
+
+	.domain,.tick line{
+		stroke:gray;
+		stroke-width:1;
+	}
+	</style>
+	<script type="text/javascript" src="case_1/d3.min.js"></script>
+</head>
+<body>
+	<div id="container"></div>
+
+	<script type="text/javascript">
+	var width = 500,
+		height = 300,
+		margin = {left:50,top:30,right:20,bottom:20},
+		g_width = width -margin.left-margin.right,
+		g_height = height-margin.top-margin.bottom
+
+		var svg = d3.select("#container")
+		.append("svg")
+		.attr("width",width)
+		.attr("height",height)
+
+
+		var g = d3.select("svg")
+		.append("g")
+		.attr("transform","translate("+margin.left+","+margin.top+")")
+		//图形缩放
+		var data = [1,3,4,7,8,9,5,3,8,2]
+		var scale_x = d3.scale.linear()
+		.domain([0,data.length-1])
+		.range([0,g_width])
+		var scale_y = d3.scale.linear()
+		.domain([0,d3.max(data)])
+		.range([g_height,0])
+		//生成数据
+		//使用d3.scale.area()画面积图
+		var area_generator = d3.svg.area()
+		.x(function(d,i){return scale_x(i)})
+		.y0(g_height)
+		.y1(function(d){return scale_y(d);})
+		.interpolate("cardinal") //曲线圆滑
+		//将数据放到图形上
+		g
+		.append("path")
+		.attr("d",area_generator(data))
+		.style("fill","#BDD3E6")
+		//坐标轴
+		var x_axis = d3.svg.axis().scale(scale_x),
+		y_axis = d3.svg.axis().scale(scale_y).orient("left");
+		//将坐标轴追加到图形上
+		g.append("g")
+		.call(x_axis)
+		.attr("transform","translate(0," + g_height + ")")
+		g.append("g")
+		.call(y_axis)
+	</script>
+</body>
+</html>
