@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+	
+	</style>
+	<script type="text/javascript" src="d3.min.js"></script>
+</head>
+<body>
+	<div id="container"></div>
+
+	<script type="text/javascript">
+		var data = [1,4,7,3,9,23,12,5,10,2],
+		bar_width = 50,
+		bar_padding = 10,
+		svg_width = (bar_width + bar_padding)*data.length,
+		svg_height = 500;
+		//缩放函数
+		var scale = d3.scale.linear()
+		.domain([0,d3.max(data)])
+		.range([svg_height,0]);
+		var svg = d3.select("#container")
+		.append("svg")
+		.attr("width",svg_width)
+		.attr("height",svg_height)
+
+		var bar = svg.selectAll("g")
+		.data(data)
+		.enter()
+		.append("g")
+		.attr("transform",function(d,i){
+			return "translate(" + i*(bar_width+bar_padding)+",0)";
+		})
+		//设置图形形状
+		bar.append("rect")
+		.attr({
+			"y":function(d){ return scale(d)},
+			"width":bar_width,
+			"height":function(d){return svg_height - scale(d)}
+		})
+		.style("fill","steelblue")
+		//设置文字
+		bar.append("text")
+		.text(function(d){return d})
+		.attr({
+			"y":function(d){return scale(d)},
+			"x":bar_width/2,
+			"dy":15,
+			"text-anchor":"middle"
+		})
+
+		var scale_x = d3.scale.linear()
+		.domain([0,data.length-1])
+		.range([svg_height,0])
+
+		var scale_y = d3.scale.linear()
+		.domain([0,d3.max(data)])
+		.range([svg_height,0])
+
+		var x_axis = d3.svg.axis().scale(scale_x),
+		y_axis = d3.svg.axis().scale(scale_y).orient("left");
+
+		bar.append("g")
+		.call(x_axis)
+		.attr("transform","translate(0," + svg_height + ")")
+		// bar.append("g")
+		// .call(y_axis)
+	</script>
+</body>
+</html>
