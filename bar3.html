@@ -3,7 +3,11 @@
 <head>
 	<title></title>
 	<style type="text/css">
-	
+		.domain,.tick line{
+			fill: none;
+			stroke: gray;
+			stroke-width:1;
+		}
 	</style>
 	<script type="text/javascript" src="d3.min.js"></script>
 </head>
@@ -12,31 +16,51 @@
 
 	<script type="text/javascript">
 		var data = [1,4,7,3,9,23,12,5,10,2],
-		bar_width = 50,
-		bar_padding = 10,
-		svg_width = (bar_width + bar_padding)*data.length,
-		svg_height = 500;
+		width = 1000,
+		height = 500,
+		margin = {left:30,top:30,right:30,bottom:30},
+		svg_width = width + margin.left + margin.right,
+		svg_height = height + margin.top + margin.bottom;
 		//缩放函数
 		var scale = d3.scale.linear()
 		.domain([0,d3.max(data)])
 		.range([svg_height,0]);
+
+		var scale_x = d3.scale.ordinal()
+		.domain(data).
+		rangeBands([0,width],0.1);
+
+
 		var svg = d3.select("#container")
 		.append("svg")
 		.attr("width",svg_width)
-		.attr("height",svg_height)
+		.attr("height",svg_height);
 
-		var bar = svg.selectAll("g")
+		var chart = svg.append("g")
+		.attr("transform","translate("+margin.left + "," +margin.top +")");
+		//坐标轴
+		var x_axis = d3.svg.axis().scale(scale_x),
+		y_axis = d3.svg.axis().scale(scale).orient("left");
+
+		chart.append("g")
+		.call(x_axis)
+		.attr("transform","translate(0," + height + ")");
+		chart.append("g")
+		.call(y_axis)
+
+		var bar = chart.selectAll(".bar")
 		.data(data)
 		.enter()
 		.append("g")
+		.attr("class","bar")
 		.attr("transform",function(d,i){
-			return "translate(" + i*(bar_width+bar_padding)+",0)";
+			return "translate(" + scale_x(d)+",0)";
 		})
 		//设置图形形状
 		bar.append("rect")
 		.attr({
 			"y":function(d){ return scale(d)},
-			"width":bar_width,
+			"width":50,
 			"height":function(d){return svg_height - scale(d)}
 		})
 		.style("fill","steelblue")
@@ -45,27 +69,10 @@
 		.text(function(d){return d})
 		.attr({
 			"y":function(d){return scale(d)},
-			"x":bar_width/2,
+			"x":50/2,
 			"dy":15,
 			"text-anchor":"middle"
 		})
-
-		var scale_x = d3.scale.linear()
-		.domain([0,data.length-1])
-		.range([svg_height,0])
-
-		var scale_y = d3.scale.linear()
-		.domain([0,d3.max(data)])
-		.range([svg_height,0])
-
-		var x_axis = d3.svg.axis().scale(scale_x),
-		y_axis = d3.svg.axis().scale(scale_y).orient("left");
-
-		bar.append("g")
-		.call(x_axis)
-		.attr("transform","translate(0," + svg_height + ")")
-		// bar.append("g")
-		// .call(y_axis)
 	</script>
 </body>
 </html>

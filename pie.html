@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="d3.min.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<script type="text/javascript">
+	d3.csv("education.csv",type,function(data){
+		const width = 400,
+		height = 400;
+		var svg = d3.select("#container")
+		.append("svg")
+		.attr("width",width)
+		.attr("height",height);
+		//偏移
+		var g = svg.append("g")
+		.attr("transform","translate(200,200)");
+		//内原点、外原点
+		var arc_generator = d3.svg.arc()
+		.innerRadius(100)
+		.outerRadius(200);
+
+		var angle_data = d3.layout.pie()
+		.value(function(d){return d.population;});
+		//颜色
+		var color = d3.scale.category20();
+
+		g.selectAll("path")
+		.data(angle_data(data))
+		.enter()
+		.append("path")
+		.attr("d",arc_generator)
+		.style("fill",function(d,i){return color(i);})
+
+		//文字
+		g.selectAll("text")
+		.data(angle_data(data))
+
+		.enter()
+		.append("text")
+		.text(function(d){return d.data.education;})
+		.attr("transform",function(d){return "translate(" + arc_generator.centroid(d)+")";})
+		.attr("text-anchor","middle")
+	});
+	function type(d){
+		d.population = +d.population;
+		return d;
+	}
+</script>
+</body>
+</html>
